@@ -1,18 +1,48 @@
 package board
 
+import board.Square.Square
 import piece._
 
 import scala.collection.mutable
 
 
 object Board {
-  val pieces: Array[mutable.HashMap[String, BitBoard]] = new Array[mutable.HashMap[String, BitBoard]](2)
+  val pieces: Array[mutable.HashMap[Int, BitBoard]] = new Array[mutable.HashMap[Int, BitBoard]](2)
 
-  def getWhitePieces: mutable.HashMap[String, BitBoard] = {
+  def getPieceOnSquare(square: Square): Option[Piece] = {
+
+    getBlackPieceOnSquare(square) match {
+      case Some(piece) => {
+        Some(piece)
+      }
+      case None => getWhitePieceOnSquare(square) match {
+        case Some(piece) => {
+          Some(piece)
+        }
+        case None => None
+      }
+    }
+  }
+
+  def getWhitePieceOnSquare(square: Square): Option[Piece] = {
+    getWhitePieces.values.toArray.find(bitBoard => bitBoard.getPieceOn(square).isDefined) match {
+      case Some(board) => board.getPieceOn(square)
+      case None => None
+    }
+  }
+
+  def getBlackPieceOnSquare(square: Square): Option[Piece] = {
+    getBlackPieces.values.toArray.find(bitBoard => bitBoard.getPieceOn(square).isDefined) match {
+      case Some(board) => board.getPieceOn(square)
+      case None => None
+    }
+  }
+
+  def getWhitePieces: mutable.HashMap[Int, BitBoard] = {
     pieces(0)
   }
 
-  def getBlackPieces: mutable.HashMap[String, BitBoard] = {
+  def getBlackPieces: mutable.HashMap[Int, BitBoard] = {
     pieces(1)
   }
 
@@ -25,58 +55,77 @@ object Board {
   }
 
   def getWhitePawns: BitBoard = {
-    getWhitePieces("pawn")
+    getWhitePieces(PieceCode.wpawn)
   }
 
   def getWhiteRooks: BitBoard = {
-    getWhitePieces("rook")
+    getWhitePieces(PieceCode.wrook)
   }
 
   def getWhiteKnights: BitBoard = {
-    getWhitePieces("knight")
+    getWhitePieces(PieceCode.wknight)
   }
 
   def getWhiteBishops: BitBoard = {
-    getWhitePieces("bishop")
+    getWhitePieces(PieceCode.wbishop)
   }
 
   def getWhiteQueens: BitBoard = {
-    getWhitePieces("queen")
+    getWhitePieces(PieceCode.wqueen)
   }
 
   def getWhiteKing: BitBoard = {
-    getWhitePieces("king")
+    getWhitePieces(PieceCode.wking)
   }
 
   def getBlackPawns: BitBoard = {
-    getBlackPieces("pawn")
+    getBlackPieces(PieceCode.bpawn)
   }
 
   def getBlackRooks: BitBoard = {
-    getBlackPieces("rook")
+    getBlackPieces(PieceCode.brook)
   }
 
   def getBlackKnights: BitBoard = {
-    getBlackPieces("knight")
+    getBlackPieces(PieceCode.bknight)
   }
 
   def getBlackBishops: BitBoard = {
-    getBlackPieces("bishop")
+    getBlackPieces(PieceCode.bbishop)
   }
 
   def getBlackQueens: BitBoard = {
-    getBlackPieces("queen")
+    getBlackPieces(PieceCode.bqueen)
   }
 
   def getBlackKing: BitBoard = {
-    getBlackPieces("king")
+    getBlackPieces(PieceCode.bking)
   }
 
+  def boardRepresentation: String = {
+    val representation =  new StringBuilder
+    (7 to 0 by -1).toArray.foreach(row => {
+      (0 to 7).toArray.foreach(col => {
+        val squareId = row * 8 + col
+        val square = Square.getSquareFromId(squareId)
+        getPieceOnSquare(square) match {
+          case Some(piece) => representation.append(piece.pieceAbbreviation)
+          case None => representation.append("-")
+        }
+        representation.append(" ")
+        if (col == 7)
+          representation.append("\n")
+      })
+    })
+    representation.toString()
+  }
 
-  def createDefaultBoard(): Array[mutable.HashMap[String, BitBoard]] = {
+  def printBoard: Unit = {print(boardRepresentation)}
 
-    var whitePieces = new mutable.HashMap[String, BitBoard]
-    var blackPieces = new mutable.HashMap[String, BitBoard]
+  def createDefaultBoard(): Array[mutable.HashMap[Int, BitBoard]] = {
+
+    var whitePieces = new mutable.HashMap[Int, BitBoard]
+    var blackPieces = new mutable.HashMap[Int, BitBoard]
     createDefaultPawns()
     createDefaultRooks()
     createDefaultKnights()
@@ -95,8 +144,8 @@ object Board {
         whitePawns.addPiece(whitePiece)
         blackPawns.addPiece(blackPiece)
       })
-      val wMap = "pawn" -> whitePawns
-      val bMap = "pawn" -> blackPawns
+      val wMap = PieceCode.wpawn -> whitePawns
+      val bMap = PieceCode.bpawn -> blackPawns
       whitePieces += wMap
       blackPieces += bMap
     }
@@ -112,8 +161,8 @@ object Board {
         whiteRooks.addPiece(whitePiece)
         blackRooks.addPiece(blackPiece)
       })
-      val wMap = "rook" -> whiteRooks
-      val bMap = "rook" -> blackRooks
+      val wMap = PieceCode.wrook -> whiteRooks
+      val bMap = PieceCode.brook -> blackRooks
       whitePieces += wMap
       blackPieces += bMap
     }
@@ -129,8 +178,8 @@ object Board {
         whiteKnights.addPiece(whitePiece)
         blackKnights.addPiece(blackPiece)
       })
-      val wMap = "knight" -> whiteKnights
-      val bMap = "knight" -> blackKnights
+      val wMap = PieceCode.wknight -> whiteKnights
+      val bMap = PieceCode.bknight -> blackKnights
       whitePieces += wMap
       blackPieces += bMap
     }
@@ -146,8 +195,8 @@ object Board {
         whiteBishops.addPiece(whitePiece)
         blackBishops.addPiece(blackPiece)
       })
-      val wMap = "bishop" -> whiteBishops
-      val bMap = "bishop" -> blackBishops
+      val wMap = PieceCode.wbishop -> whiteBishops
+      val bMap = PieceCode.bbishop -> blackBishops
       whitePieces += wMap
       blackPieces += bMap
     }
@@ -164,8 +213,8 @@ object Board {
         whiteQueens.addPiece(whitePiece)
         blackQueens.addPiece(blackPiece)
       })
-      val wMap = "queen" -> whiteQueens
-      val bMap = "queen" -> blackQueens
+      val wMap = PieceCode.wqueen -> whiteQueens
+      val bMap = PieceCode.bqueen -> blackQueens
       whitePieces += wMap
       blackPieces += bMap
     }
@@ -181,8 +230,8 @@ object Board {
         whiteKing.addPiece(whitePiece)
         blackKing.addPiece(blackPiece)
       })
-      val wMap = "king" -> whiteKing
-      val bMap = "king" -> blackKing
+      val wMap = PieceCode.wking -> whiteKing
+      val bMap = PieceCode.bking -> blackKing
       whitePieces += wMap
       blackPieces += bMap
     }

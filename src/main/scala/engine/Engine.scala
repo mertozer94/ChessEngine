@@ -6,7 +6,6 @@ import piece._
 
 
 // TODO generate legal moves
-// TODO special moves (en passant, promotion, castle)
 object Engine {
   def generateMovesForGivenPiece(piece: Piece): Long = {
     piece match {

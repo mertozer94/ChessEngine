@@ -28,7 +28,7 @@ object Square extends Enumeration {
   }
 
   def getSymmetricSquare(square: Square): Square = {
-    val c = getCoordinates(square);
+    val c = getCoordinates(square)
     getSquareFromCoordinates((math.abs(7 - c._1), c._2))
   }
 }

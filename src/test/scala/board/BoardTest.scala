@@ -80,6 +80,12 @@ class BoardTest extends FlatSpec {
   "After Create Default Board getAllBlackPiecesBinaryRep" should "return 0x000000000000FFFFL" in {
     assert(Board.getAllBlackPiecesBinaryRep.equals(0x000000000000FFFFL))
   }
-
+//  info("first board representation")
+//  "element representation in board" should "be" in {
+//    Board.createDefaultBoard()
+//    val rep = Board.boardRepresentation
+//    val mock = "r n b q k b n r \np p p p p p p p \n- - - - - - - - \n- - - - - - - - \n- - - - - - - - \n- - - - - - - - \nP P P P P P P P \nR N B Q K B N R "
+//    assert(rep.equals(mock))
+//  }
 
 }
